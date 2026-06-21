@@ -49,11 +49,11 @@ def test_discovery_includes_geonb_files_and_ignores_unrelated(
 
     included_names = {Path(e.path).name for e in manifest.included}
     assert "Forest_stand.csv" in included_names
-    assert "Wetland_Terres_humides.geojson" in included_names
     assert "Forestry_R_1_2_gdb_export.zip" in included_names
     assert "Forestry_R_1_2_gdb_meta.txt" in included_names
 
     ignored_names = {Path(e.path).name for e in manifest.ignored}
+    assert "Wetland_Terres_humides.geojson" in ignored_names
     assert "random_notes.txt" in ignored_names
     assert "photos_backup.zip" in ignored_names
 
@@ -104,3 +104,28 @@ def test_discovery_marks_duplicate_downloads(sample_source_dir: Path, tmp_path: 
     assert len(dup_entries) == 1
     assert dup_entries[0].decision == DiscoveryDecision.IGNORED
     assert dup_entries[0].duplicate_of is not None
+
+
+def test_discovery_ignores_redundant_geojson_kml_gpkg_kmz(
+    sample_source_dir: Path,
+    tmp_path: Path,
+) -> None:
+    """Alternate web/GIS exports that duplicate shapefile zips should be excluded."""
+    (sample_source_dir / "Non-Forest_Non_forestières.kml").write_text("<kml/>")
+    (sample_source_dir / "Forestry_R_1_2_gdb_export.gpkg").write_bytes(b"GPKG")
+    (sample_source_dir / "Forestry_R_3_4_5_gdb_export.kmz").write_bytes(b"KMZ")
+
+    config = PipelineConfig(
+        source_dir=sample_source_dir,
+        paths={"raw_catalog": tmp_path / "catalog"},
+        discover={
+            "include_patterns": ["forest", "forestry", "non-forest", "wetland"],
+            "extensions": [".kml", ".gpkg", ".kmz", ".geojson"],
+        },
+    )
+    manifest = run_discovery(config, project_root=tmp_path)
+    ignored = {Path(e.path).name: e for e in manifest.ignored}
+    assert ignored["Wetland_Terres_humides.geojson"].layer_hint.value == "redundant_format_export"
+    assert ignored["Non-Forest_Non_forestières.kml"].layer_hint.value == "redundant_format_export"
+    assert ignored["Forestry_R_1_2_gdb_export.gpkg"].layer_hint.value == "redundant_format_export"
+    assert ignored["Forestry_R_3_4_5_gdb_export.kmz"].layer_hint.value == "redundant_format_export"

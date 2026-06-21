@@ -58,6 +58,7 @@ class LayerHint(str, Enum):
     METADATA = "metadata"
     ESRI_JSON_EXPORT = "esri_json_export"
     PROVINCE_CSV_EXPORT = "province_csv_export"
+    REDUNDANT_FORMAT_EXPORT = "redundant_format_export"
     UNKNOWN = "unknown"
 
 
@@ -273,6 +274,32 @@ def _sniff_esri_json_export(path: Path) -> bool:
     return stripped.startswith(_ESRI_JSON_PREFIX)
 
 
+def _redundant_vector_export_reason(name: str, ext: str) -> str | None:
+    """Return ignore reason when an alternate-format export duplicates shapefile zips."""
+    lower = name.lower()
+    layer = _infer_layer(name)
+
+    if ext in {".geojson", ".kml"} and layer in {LayerHint.NON_FOREST, LayerHint.WETLAND}:
+        return (
+            f"{ext} export redundant with {layer.value} shapefile zip already ingested; "
+            "same features in WGS84 web format only"
+        )
+
+    if ext == ".gpkg" and layer == LayerHint.FOREST and "forestry" in lower:
+        return (
+            "Regional forest GPKG redundant with shapefile zip; raw export pre-geometry-clean "
+            "(interim forest GPKGs are authoritative)"
+        )
+
+    if ext == ".kmz" and layer == LayerHint.FOREST:
+        return (
+            "Forest KMZ is a Google Earth preview subsample (~1k features), not the full "
+            "regional inventory; shapefile zip is authoritative"
+        )
+
+    return None
+
+
 def _classify_file(
     path: Path,
     patterns: list[re.Pattern[str]],
@@ -342,6 +369,17 @@ def _classify_file(
                 "regional shapefiles and different vintage/coverage"
             ),
             layer_hint=LayerHint.PROVINCE_CSV_EXPORT,
+        )
+
+    redundant = _redundant_vector_export_reason(name, ext)
+    if redundant:
+        return ManifestEntry(
+            path=str(path),
+            extension=ext,
+            size_bytes=stat.st_size,
+            decision=DiscoveryDecision.IGNORED,
+            reason=redundant,
+            layer_hint=LayerHint.REDUNDANT_FORMAT_EXPORT,
         )
 
     if _name_matches(name, patterns) or layer_hint != LayerHint.UNKNOWN:
