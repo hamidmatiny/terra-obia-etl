@@ -1,0 +1,52 @@
+# GeoNB / GNB Open Data — forest, non-forest, wetland layers (New Brunswick)
+source_dir: /Users/hamidrezamatiny/Downloads
+
+# Canonical CRS for harmonized outputs (terra-OBIA uses EPSG:32619 for NB)
+target_crs_epsg: 32619
+
+# Layer taxonomy aligned with terra-OBIA workflows
+layers:
+  - forest
+  - non_forest
+  - wetland
+
+# Working directories (relative to project root; never write to source_dir)
+paths:
+  raw_catalog: data/raw_catalog
+  interim: data/interim
+  processed: data/processed
+
+discover:
+  # Extensions to scan recursively under source_dir
+  extensions:
+    - .laz
+    - .csv
+    - .xlsx
+    - .zip
+    - .kml
+    - .kmz
+    - .geojson
+    - .gpkg
+    - .txt
+
+  # Filename / content patterns for GeoNB forestry & wetland data
+  include_patterns:
+    - forest
+    - forestry
+    - non-forest
+    - nonforest
+    - wetland
+    - terres_humides
+    - geonb
+    - nbhn
+    - rhnb
+    - datadictionary
+    - rri
+    - nb_\d{4}_\d+_\d+   # LiDAR tile naming: nb_YYYY_easting_northing.laz
+
+  # Require manifest review before ingest (override with --yes on CLI)
+  require_confirmation: true
+
+# NBHN/RHNB hydrography: only ingest FileGDB zip (skip redundant shp/lpk exports)
+hydrography:
+  preferred_format: fgdb

@@ -1,0 +1,81 @@
+[tool.poetry]
+name = "terra-obia-etl"
+version = "0.1.0"
+description = "ETL pipeline for GeoNB forest/non-forest/wetland data → terra-OBIA training inputs"
+authors = ["Terra OBIA Team"]
+readme = "README.md"
+packages = [{ include = "terra_etl" }]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+pydantic = "^2.0"
+pydantic-settings = "^2.0"
+pyyaml = "^6.0"
+rasterio = "^1.4.0"
+geopandas = "^1.0.0"
+shapely = "^2.0.0"
+pyproj = "^3.6.0"
+numpy = "^2.0.0"
+pandas = "^3.0.0"
+openpyxl = "^3.1.0"
+
+# Full terra-OBIA monorepo (TileGrid, CogReader, RasterProfile). Optional because
+# it pulls torch/FastAPI; install with: poetry install --with terra-obia
+terra-obia = { path = "../terra-OBIA", develop = true, optional = true }
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.0"
+pytest-cov = "^6.0"
+mypy = "^1.13"
+ruff = "^0.8.0"
+types-pyyaml = "^6.0.0"
+types-shapely = "^2.0.0"
+matplotlib = "^3.11.0"
+
+[tool.poetry.extras]
+terra-obia = ["terra-obia"]
+
+[tool.poetry.scripts]
+terra-etl = "terra_etl.cli:main"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+src = ["terra_etl", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "W", "UP", "B", "SIM", "TCH", "D"]
+ignore = ["D100", "D104", "TC003", "TC002", "TC001"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+warn_return_any = true
+warn_unused_configs = true
+packages = ["terra_etl"]
+
+[[tool.mypy.overrides]]
+module = [
+    "rasterio.*",
+    "geopandas.*",
+    "shapely.*",
+    "numpy.*",
+    "pandas.*",
+    "yaml.*",
+]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-v --tb=short"
+
+[tool.coverage.run]
+source = ["terra_etl"]
+omit = ["tests/*"]
