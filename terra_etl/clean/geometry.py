@@ -305,12 +305,13 @@ def clean_geometries_split_policy(
     read_without_ogr_autocorrect: bool = True,
     area_change_threshold: float = DEFAULT_AREA_CHANGE_THRESHOLD,
     id_column: str = "STDLAB",
+    drop_sliver_features: bool = True,
 ) -> tuple[gpd.GeoDataFrame, GeometryCleanStats]:
-    """Clean invalid forest polygons: drop slivers, buffer(0), then exterior-ring fallback.
+    """Clean invalid polygons: optional sliver drop, buffer(0), exterior-ring fallback.
 
     Policy:
-        1. Drop features with ``STDLAB=0`` (degenerate slivers).
-        2. For remaining invalid features with real STDLAB: apply ``buffer(0)``.
+        1. When ``drop_sliver_features`` is True, drop features with ``STDLAB=0``.
+        2. For remaining invalid features: apply ``buffer(0)``.
         3. If area change still exceeds ``area_change_threshold``, replace with
            exterior-ring reconstruction from the **original** invalid geometry.
 
@@ -324,7 +325,8 @@ def clean_geometries_split_policy(
         output_path: Intended output path (for audit).
         read_without_ogr_autocorrect: Whether ``OGR_ORGANIZE_POLYGONS=SKIP`` was used on read.
         area_change_threshold: Switch to exterior-ring when buffer(0) exceeds this fraction.
-        id_column: Stand identifier column used for sliver detection.
+        id_column: Column used for sliver detection when ``drop_sliver_features`` is True.
+        drop_sliver_features: Drop degenerate ``STDLAB=0`` inventory slivers (forest only).
 
     Returns:
         Cleaned GeoDataFrame and audit statistics.
@@ -352,7 +354,10 @@ def clean_geometries_split_policy(
         )
 
     working = gdf.copy()
-    sliver_mask = working[id_column].map(is_sliver_std) if id_column in working.columns else pd.Series(False, index=working.index)
+    if drop_sliver_features and id_column in working.columns:
+        sliver_mask = working[id_column].map(is_sliver_std)
+    else:
+        sliver_mask = pd.Series(False, index=working.index)
     dropped_sliver_count = int(sliver_mask.sum())
     if dropped_sliver_count:
         working = working.loc[~sliver_mask].copy()
@@ -429,11 +434,12 @@ def clean_geometries_split_policy(
                     )
                 )
 
-            if id_col == "STDLAB" and id_value and not is_sliver_std(id_value):
+            if id_col and id_value and (not drop_sliver_features or not is_sliver_std(id_value)):
                 comparison = _compare_repair_methods_on_geom(original)
                 comparison.update(
                     {
-                        "STDLAB": id_value,
+                        "feature_id": id_value,
+                        "id_column": id_col,
                         "chosen_method": method,
                         "chosen_pct_vs_baseline": round(
                             relative_area_change(baseline_area, area_after) * 100, 4

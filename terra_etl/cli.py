@@ -7,6 +7,7 @@ import sys
 from pathlib import Path
 
 from terra_etl.config import PipelineConfig
+from terra_etl.clean.geometry import GeometryCleanReport
 from terra_etl.discover import run_discovery
 from terra_etl.pipeline import run_pipeline
 
@@ -44,6 +45,27 @@ def _cmd_discover(args: argparse.Namespace) -> int:
             print(f"    → {entry.reason}")
 
     return 0
+
+
+def _print_geometry_clean_report(clean, audit_path: Path, title: str) -> None:
+    """Print geometry clean summary for one layer group."""
+    print(f"\n{title}: {'PASSED' if clean.passed else 'FAILED'}")
+    print(f"Audit: {audit_path}")
+    for record in clean.records:
+        dist = record.area_change_distribution
+        dist_summary = ""
+        if dist is not None:
+            dist_summary = (
+                f" area_median={dist.median_pct:.3f}% p90={dist.p90_pct:.3f}% "
+                f">{record.area_change_threshold:.0%}={record.area_change_count}"
+            )
+        print(
+            f"  [{record.region_id}] in={record.total_features_in} out={record.total_features} "
+            f"dropped_sliver={record.dropped_sliver_count} "
+            f"fixed={record.fixed_count} (buffer0={record.repair_buffer0_count}, "
+            f"exterior={record.repair_exterior_ring_count}) "
+            f"shell_baseline={record.outer_shell_baseline_count}{dist_summary}"
+        )
 
 
 def _cmd_run(args: argparse.Namespace) -> int:
@@ -102,26 +124,26 @@ def _cmd_run(args: argparse.Namespace) -> int:
             print(f"  removed {path}")
 
     if result.forest_clean is not None:
-        clean = result.forest_clean
-        print(f"\nForest geometry clean: {'PASSED' if clean.passed else 'FAILED'}")
-        print(f"Audit: {config.paths.interim / 'clean_forest_geometry.json'}")
-        for record in clean.records:
-            dist = record.area_change_distribution
-            dist_summary = ""
-            if dist is not None:
-                dist_summary = (
-                    f" area_median={dist.median_pct:.3f}% p90={dist.p90_pct:.3f}% "
-                    f">1% bucket={dist.buckets.get('>1-5%', 0) + dist.buckets.get('>5-10%', 0) + dist.buckets.get('>10-50%', 0) + dist.buckets.get('>50%', 0)}"
-                )
-            print(
-                f"  [{record.region_id}] in={record.total_features_in} out={record.total_features} "
-                f"dropped_sliver={record.dropped_sliver_count} "
-                f"fixed={record.fixed_count} (buffer0={record.repair_buffer0_count}, "
-                f"exterior={record.repair_exterior_ring_count}) "
-                f"shell_baseline={record.outer_shell_baseline_count} "
-                f">{record.area_change_threshold:.0%}={record.area_change_count}{dist_summary}"
+        _print_geometry_clean_report(
+            result.forest_clean,
+            config.paths.interim / "clean_forest_geometry.json",
+            "Forest geometry clean",
+        )
+        if not result.forest_clean.passed:
+            return 1
+
+    if result.vector_clean is not None:
+        for layer in ("non_forest", "wetland"):
+            layer_records = [r for r in result.vector_clean.records if r.region_id == layer]
+            if not layer_records:
+                continue
+            layer_report = GeometryCleanReport(records=layer_records)
+            _print_geometry_clean_report(
+                layer_report,
+                config.paths.interim / f"clean_{layer}_geometry.json",
+                f"{layer.replace('_', '-').title()} geometry clean",
             )
-        if not clean.passed:
+        if not result.vector_clean.passed:
             return 1
 
     if result.csv_validation is not None:
@@ -137,7 +159,20 @@ def _cmd_run(args: argparse.Namespace) -> int:
         if not val.passed:
             return 1
 
-    print("\nNext stages (non-forest/wetland vector, laz, export) not yet implemented.")
+    if result.vector_csv_validation is not None:
+        val = result.vector_csv_validation
+        print(f"\nNon-forest / wetland CSV validation: {'PASSED' if val.passed else 'FAILED'}")
+        print(f"Audit: {config.paths.interim / 'validate_non_forest_wetland_csv.json'}")
+        for record in val.records:
+            status = "ok" if record.passed else "FAIL"
+            print(
+                f"  [{status}] {Path(record.csv_path).name} vs {Path(record.gpkg_path).name}: "
+                f"{record.message}"
+            )
+        if not val.passed:
+            return 1
+
+    print("\nNext stages (alternate vector formats, laz, harmonize, export) not yet implemented.")
     return 0
 
 

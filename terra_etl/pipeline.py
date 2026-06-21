@@ -6,7 +6,11 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from terra_etl.clean.forest import clean_forest_geometries, prune_redundant_hydrography_extracts
-from terra_etl.clean.csv_validate import validate_regional_forest_csvs
+from terra_etl.clean.csv_validate import (
+    validate_non_forest_wetland_csvs,
+    validate_regional_forest_csvs,
+)
+from terra_etl.clean.vector import clean_vector_geometries
 from terra_etl.clean.geometry import GeometryCleanReport
 from terra_etl.clean.csv_validate import CsvValidationReport
 from terra_etl.config import PipelineConfig
@@ -23,7 +27,9 @@ class PipelineResult:
     manifest: DiscoveryManifest
     zip_ingest: IngestReport | None = None
     forest_clean: GeometryCleanReport | None = None
+    vector_clean: GeometryCleanReport | None = None
     csv_validation: CsvValidationReport | None = None
+    vector_csv_validation: CsvValidationReport | None = None
     pruned_hydro_dirs: list[str] | None = None
 
 
@@ -59,10 +65,19 @@ def run_pipeline(
             resolved.paths.raw_catalog,
             resolved.paths.interim,
         )
+        result.vector_clean = clean_vector_geometries(
+            resolved.paths.raw_catalog,
+            resolved.paths.interim,
+        )
 
+    csv_paths = [e.path for e in manifest.included if e.extension == ".csv"]
     if result.forest_clean is not None and result.forest_clean.passed:
-        csv_paths = [e.path for e in manifest.included if e.extension == ".csv"]
         result.csv_validation = validate_regional_forest_csvs(
+            csv_paths,
+            resolved.paths.interim,
+        )
+    if result.vector_clean is not None and result.vector_clean.passed:
+        result.vector_csv_validation = validate_non_forest_wetland_csvs(
             csv_paths,
             resolved.paths.interim,
         )
