@@ -1,0 +1,472 @@
+{
+  "model_id": "stand_20260621T034627Z_0d59a3fa",
+  "test_size": 0.2,
+  "train_size": 0.8,
+  "feature_columns": [
+    "area_m2",
+    "perimeter_m",
+    "compactness",
+    "l1_ds",
+    "l1_sc",
+    "l1_vs",
+    "l1_pstock",
+    "lc_code",
+    "wri_code",
+    "spvc"
+  ],
+  "overall_accuracy": 0.6985169994001033,
+  "cover_type_metrics": {
+    "agriculture": {
+      "precision": 0.6310640578933262,
+      "recall": 0.5874500998003992,
+      "f1-score": 0.6084765473575398,
+      "support": 8016.0
+    },
+    "aquatic_bed": {
+      "precision": 0.5865102639296188,
+      "recall": 0.47961630695443647,
+      "f1-score": 0.5277044854881267,
+      "support": 417.0
+    },
+    "barren": {
+      "precision": 0.7518918918918919,
+      "recall": 0.727510460251046,
+      "f1-score": 0.7395002658160553,
+      "support": 1912.0
+    },
+    "beach": {
+      "precision": 0.7304347826086957,
+      "recall": 0.14608695652173914,
+      "f1-score": 0.24347826086956523,
+      "support": 575.0
+    },
+    "bog": {
+      "precision": 0.5871751886001676,
+      "recall": 0.6307969383160739,
+      "f1-score": 0.6082049055784675,
+      "support": 2221.0
+    },
+    "coastal_marsh": {
+      "precision": 0.9326923076923077,
+      "recall": 0.15953947368421054,
+      "f1-score": 0.27247191011235955,
+      "support": 608.0
+    },
+    "conifer": {
+      "precision": 0.49287564766839376,
+      "recall": 0.3805,
+      "f1-score": 0.42945823927765236,
+      "support": 6000.0
+    },
+    "deciduous": {
+      "precision": 0.3965461062235256,
+      "recall": 0.4056666666666667,
+      "f1-score": 0.401054539462844,
+      "support": 6000.0
+    },
+    "defense": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1-score": 0.0,
+      "support": 156.0
+    },
+    "developed": {
+      "precision": 0.6869007114135478,
+      "recall": 0.8063725490196079,
+      "f1-score": 0.741857357608151,
+      "support": 11016.0
+    },
+    "dune": {
+      "precision": 0.01054481546572935,
+      "recall": 0.07317073170731707,
+      "f1-score": 0.018433179723502304,
+      "support": 82.0
+    },
+    "fen": {
+      "precision": 0.62531328320802,
+      "recall": 0.6002405773857258,
+      "f1-score": 0.6125204582651391,
+      "support": 2494.0
+    },
+    "herbaceous": {
+      "precision": 0.6195652173913043,
+      "recall": 0.4351145038167939,
+      "f1-score": 0.5112107623318386,
+      "support": 393.0
+    },
+    "industrial": {
+      "precision": 0.2502732240437158,
+      "recall": 0.15369127516778525,
+      "f1-score": 0.19043659043659045,
+      "support": 1490.0
+    },
+    "infrastructure": {
+      "precision": 0.6582867783985102,
+      "recall": 0.3361864003804089,
+      "f1-score": 0.4450739691532893,
+      "support": 2103.0
+    },
+    "mixed": {
+      "precision": 0.40636120996441283,
+      "recall": 0.3045,
+      "f1-score": 0.3481326219512195,
+      "support": 6000.0
+    },
+    "recreational": {
+      "precision": 0.5357142857142857,
+      "recall": 0.05928853754940711,
+      "f1-score": 0.10676156583629894,
+      "support": 253.0
+    },
+    "rocky_shore": {
+      "precision": 0.018518518518518517,
+      "recall": 0.02127659574468085,
+      "f1-score": 0.019801980198019802,
+      "support": 47.0
+    },
+    "scrub": {
+      "precision": 0.3870967741935484,
+      "recall": 0.08108108108108109,
+      "f1-score": 0.1340782122905028,
+      "support": 148.0
+    },
+    "shrub": {
+      "precision": 0.7547169811320755,
+      "recall": 0.7258064516129032,
+      "f1-score": 0.7399794450154162,
+      "support": 992.0
+    },
+    "tidal_flat": {
+      "precision": 0.0728476821192053,
+      "recall": 0.2953020134228188,
+      "f1-score": 0.11686586985391766,
+      "support": 149.0
+    },
+    "water": {
+      "precision": 0.39731132703314254,
+      "recall": 0.8627167630057804,
+      "f1-score": 0.5440626993529573,
+      "support": 3460.0
+    },
+    "wetland_forest": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1-score": 0.0,
+      "support": 1129.0
+    },
+    "wetland_marsh": {
+      "precision": 0.45714285714285713,
+      "recall": 0.17410228509249184,
+      "f1-score": 0.25216706067769895,
+      "support": 3676.0
+    },
+    "wetland_shrub": {
+      "precision": 0.7437483719718677,
+      "recall": 0.9529411764705882,
+      "f1-score": 0.8354485936871365,
+      "support": 11985.0
+    },
+    "wetland_unknown": {
+      "precision": 0.2727272727272727,
+      "recall": 0.03361344537815126,
+      "f1-score": 0.059850374064837904,
+      "support": 357.0
+    }
+  },
+  "canopy_closure_metrics": {
+    "dense": {
+      "precision": 0.587437300501596,
+      "recall": 0.6984277582000542,
+      "f1-score": 0.6381424148606811,
+      "support": 7378.0
+    },
+    "moderate": {
+      "precision": 0.5973144003704275,
+      "recall": 0.5270325480049026,
+      "f1-score": 0.5599768485023875,
+      "support": 7343.0
+    },
+    "open": {
+      "precision": 0.8455633825062387,
+      "recall": 0.9138643269263597,
+      "f1-score": 0.8783881341471418,
+      "support": 29291.0
+    },
+    "sparse": {
+      "precision": 0.911469056558072,
+      "recall": 0.8160624570788304,
+      "f1-score": 0.8611312407033067,
+      "support": 27667.0
+    }
+  },
+  "rare_cover_type_metrics": {
+    "aquatic_bed": {
+      "precision": 0.5865102639296188,
+      "recall": 0.47961630695443647,
+      "f1-score": 0.5277044854881267,
+      "support": 417.0
+    },
+    "beach": {
+      "precision": 0.7304347826086957,
+      "recall": 0.14608695652173914,
+      "f1-score": 0.24347826086956523,
+      "support": 575.0
+    },
+    "coastal_marsh": {
+      "precision": 0.9326923076923077,
+      "recall": 0.15953947368421054,
+      "f1-score": 0.27247191011235955,
+      "support": 608.0
+    },
+    "defense": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1-score": 0.0,
+      "support": 156.0
+    },
+    "dune": {
+      "precision": 0.01054481546572935,
+      "recall": 0.07317073170731707,
+      "f1-score": 0.018433179723502304,
+      "support": 82.0
+    },
+    "recreational": {
+      "precision": 0.5357142857142857,
+      "recall": 0.05928853754940711,
+      "f1-score": 0.10676156583629894,
+      "support": 253.0
+    },
+    "rocky_shore": {
+      "precision": 0.018518518518518517,
+      "recall": 0.02127659574468085,
+      "f1-score": 0.019801980198019802,
+      "support": 47.0
+    },
+    "scrub": {
+      "precision": 0.3870967741935484,
+      "recall": 0.08108108108108109,
+      "f1-score": 0.1340782122905028,
+      "support": 148.0
+    },
+    "tidal_flat": {
+      "precision": 0.0728476821192053,
+      "recall": 0.2953020134228188,
+      "f1-score": 0.11686586985391766,
+      "support": 149.0
+    },
+    "wetland_unknown": {
+      "precision": 0.2727272727272727,
+      "recall": 0.03361344537815126,
+      "f1-score": 0.059850374064837904,
+      "support": 357.0
+    }
+  },
+  "top_cover_confusions": [
+    {
+      "true": "agriculture",
+      "predicted": "developed",
+      "count": 3089
+    },
+    {
+      "true": "wetland_marsh",
+      "predicted": "wetland_shrub",
+      "count": 2901
+    },
+    {
+      "true": "conifer",
+      "predicted": "deciduous",
+      "count": 1863
+    },
+    {
+      "true": "mixed",
+      "predicted": "deciduous",
+      "count": 1841
+    },
+    {
+      "true": "developed",
+      "predicted": "agriculture",
+      "count": 1756
+    },
+    {
+      "true": "deciduous",
+      "predicted": "mixed",
+      "count": 1364
+    },
+    {
+      "true": "mixed",
+      "predicted": "conifer",
+      "count": 1341
+    },
+    {
+      "true": "conifer",
+      "predicted": "mixed",
+      "count": 1305
+    },
+    {
+      "true": "deciduous",
+      "predicted": "conifer",
+      "count": 1008
+    },
+    {
+      "true": "deciduous",
+      "predicted": "water",
+      "count": 996
+    },
+    {
+      "true": "fen",
+      "predicted": "bog",
+      "count": 973
+    },
+    {
+      "true": "wetland_forest",
+      "predicted": "wetland_shrub",
+      "count": 834
+    },
+    {
+      "true": "mixed",
+      "predicted": "water",
+      "count": 832
+    },
+    {
+      "true": "bog",
+      "predicted": "fen",
+      "count": 801
+    },
+    {
+      "true": "industrial",
+      "predicted": "water",
+      "count": 725
+    }
+  ],
+  "top_canopy_confusions": [
+    {
+      "true": "sparse",
+      "predicted": "open",
+      "count": 4756
+    },
+    {
+      "true": "moderate",
+      "predicted": "dense",
+      "count": 3340
+    },
+    {
+      "true": "dense",
+      "predicted": "moderate",
+      "count": 2225
+    },
+    {
+      "true": "open",
+      "predicted": "sparse",
+      "count": 2193
+    },
+    {
+      "true": "open",
+      "predicted": "moderate",
+      "count": 194
+    },
+    {
+      "true": "sparse",
+      "predicted": "moderate",
+      "count": 190
+    },
+    {
+      "true": "sparse",
+      "predicted": "dense",
+      "count": 143
+    },
+    {
+      "true": "open",
+      "predicted": "dense",
+      "count": 136
+    },
+    {
+      "true": "moderate",
+      "predicted": "open",
+      "count": 133
+    }
+  ],
+  "cover_feature_importances": [
+    {
+      "feature": "wri_code",
+      "importance": 0.32161753222844514
+    },
+    {
+      "feature": "spvc",
+      "importance": 0.2994922306189647
+    },
+    {
+      "feature": "lc_code",
+      "importance": 0.15840936704788067
+    },
+    {
+      "feature": "compactness",
+      "importance": 0.06913965225927646
+    },
+    {
+      "feature": "l1_sc",
+      "importance": 0.06510228164670535
+    },
+    {
+      "feature": "l1_vs",
+      "importance": 0.0364971265625116
+    },
+    {
+      "feature": "area_m2",
+      "importance": 0.03396536570044918
+    },
+    {
+      "feature": "perimeter_m",
+      "importance": 0.00897013953425906
+    },
+    {
+      "feature": "l1_pstock",
+      "importance": 0.004009669003460412
+    },
+    {
+      "feature": "l1_ds",
+      "importance": 0.002796635398047433
+    }
+  ],
+  "canopy_feature_importances": [
+    {
+      "feature": "wri_code",
+      "importance": 0.4769114600248609
+    },
+    {
+      "feature": "l1_vs",
+      "importance": 0.3070756690841052
+    },
+    {
+      "feature": "lc_code",
+      "importance": 0.1387267051687766
+    },
+    {
+      "feature": "l1_sc",
+      "importance": 0.026825094112638552
+    },
+    {
+      "feature": "area_m2",
+      "importance": 0.015682124977720226
+    },
+    {
+      "feature": "l1_ds",
+      "importance": 0.013146088677857213
+    },
+    {
+      "feature": "perimeter_m",
+      "importance": 0.010294133168517112
+    },
+    {
+      "feature": "compactness",
+      "importance": 0.005735517130075636
+    },
+    {
+      "feature": "spvc",
+      "importance": 0.005239602884042165
+    },
+    {
+      "feature": "l1_pstock",
+      "importance": 0.0003636047714063987
+    }
+  ]
+}

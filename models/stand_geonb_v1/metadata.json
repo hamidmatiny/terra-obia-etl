@@ -1,0 +1,271 @@
+{
+  "model_id": "stand_20260621T060743Z_b5c69a67",
+  "workflow": "stand_delineation",
+  "training_date": "2026-06-21T06:07:43.184227+00:00",
+  "training_data_description": "GeoNB harmonized labeled stands v1 (shape + inventory attrs)",
+  "feature_columns": [
+    "area_m2",
+    "perimeter_m",
+    "compactness",
+    "l1_ds",
+    "l1_sc",
+    "l1_vs",
+    "l1_pstock",
+    "lc_code",
+    "wri_code",
+    "spvc"
+  ],
+  "cover_type_classes": [
+    "agriculture",
+    "aquatic_bed",
+    "barren",
+    "beach",
+    "bog",
+    "coastal_marsh",
+    "conifer",
+    "deciduous",
+    "defense",
+    "developed",
+    "dune",
+    "fen",
+    "herbaceous",
+    "industrial",
+    "infrastructure",
+    "mixed",
+    "recreational",
+    "rocky_shore",
+    "scrub",
+    "shrub",
+    "tidal_flat",
+    "water",
+    "wetland_forest",
+    "wetland_marsh",
+    "wetland_shrub",
+    "wetland_unknown"
+  ],
+  "canopy_closure_classes": [
+    "dense",
+    "moderate",
+    "open",
+    "sparse"
+  ],
+  "validation_metrics": {
+    "overall_accuracy": 0.6128652533399419,
+    "cover_type_metrics": {
+      "agriculture": {
+        "precision": 0.6164435946462715,
+        "recall": 0.6032934131736527,
+        "f1-score": 0.6097976167959145,
+        "support": 8016.0
+      },
+      "aquatic_bed": {
+        "precision": 0.3333333333333333,
+        "recall": 0.004796163069544364,
+        "f1-score": 0.009456264775413711,
+        "support": 417.0
+      },
+      "barren": {
+        "precision": 0.6821223709369025,
+        "recall": 0.7463389121338913,
+        "f1-score": 0.7127872127872128,
+        "support": 1912.0
+      },
+      "beach": {
+        "precision": 0.021136063408190225,
+        "recall": 0.02782608695652174,
+        "f1-score": 0.024024024024024024,
+        "support": 575.0
+      },
+      "bog": {
+        "precision": 0.5957903780068728,
+        "recall": 0.6244934714092751,
+        "f1-score": 0.6098043526049681,
+        "support": 2221.0
+      },
+      "coastal_marsh": {
+        "precision": 0.0034965034965034965,
+        "recall": 0.003289473684210526,
+        "f1-score": 0.003389830508474576,
+        "support": 608.0
+      },
+      "conifer": {
+        "precision": 0.5267019090196411,
+        "recall": 0.9266922023093913,
+        "f1-score": 0.6716561574391484,
+        "support": 107301.0
+      },
+      "deciduous": {
+        "precision": 0.38142044194811914,
+        "recall": 0.17386763690265636,
+        "f1-score": 0.2388550139420796,
+        "support": 59367.0
+      },
+      "defense": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1-score": 0.0,
+        "support": 156.0
+      },
+      "developed": {
+        "precision": 0.6734646220907605,
+        "recall": 0.7853317600072615,
+        "f1-score": 0.7251089507207509,
+        "support": 11017.0
+      },
+      "dune": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1-score": 0.0,
+        "support": 82.0
+      },
+      "fen": {
+        "precision": 0.6277935798455913,
+        "recall": 0.6194867682437851,
+        "f1-score": 0.6236125126135217,
+        "support": 2494.0
+      },
+      "herbaceous": {
+        "precision": 0.5894736842105263,
+        "recall": 0.14249363867684478,
+        "f1-score": 0.22950819672131148,
+        "support": 393.0
+      },
+      "industrial": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1-score": 0.0,
+        "support": 1490.0
+      },
+      "infrastructure": {
+        "precision": 0.5081411126187245,
+        "recall": 0.3561578697099382,
+        "f1-score": 0.4187866927592955,
+        "support": 2103.0
+      },
+      "mixed": {
+        "precision": 0.5714285714285714,
+        "recall": 8.700380641653073e-05,
+        "f1-score": 0.00017398112304814928,
+        "support": 45975.0
+      },
+      "recreational": {
+        "precision": 0.07547169811320754,
+        "recall": 0.015810276679841896,
+        "f1-score": 0.026143790849673203,
+        "support": 253.0
+      },
+      "rocky_shore": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1-score": 0.0,
+        "support": 47.0
+      },
+      "scrub": {
+        "precision": 0.5660377358490566,
+        "recall": 0.20270270270270271,
+        "f1-score": 0.29850746268656714,
+        "support": 148.0
+      },
+      "shrub": {
+        "precision": 0.5964467005076142,
+        "recall": 0.2368951612903226,
+        "f1-score": 0.33910533910533913,
+        "support": 992.0
+      },
+      "tidal_flat": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1-score": 0.0,
+        "support": 149.0
+      },
+      "water": {
+        "precision": 0.48997772828507796,
+        "recall": 0.3179190751445087,
+        "f1-score": 0.38562664329535495,
+        "support": 3460.0
+      },
+      "wetland_forest": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1-score": 0.0,
+        "support": 1129.0
+      },
+      "wetland_marsh": {
+        "precision": 0.4376187460417986,
+        "recall": 0.18797606093579977,
+        "f1-score": 0.26298763082778304,
+        "support": 3676.0
+      },
+      "wetland_shrub": {
+        "precision": 0.747114444082165,
+        "recall": 0.9560246995994659,
+        "f1-score": 0.8387569091108752,
+        "support": 11984.0
+      },
+      "wetland_unknown": {
+        "precision": 0.17073170731707318,
+        "recall": 0.0196078431372549,
+        "f1-score": 0.035175879396984924,
+        "support": 357.0
+      }
+    },
+    "canopy_closure_metrics": {
+      "dense": {
+        "precision": 0.5802198453379159,
+        "recall": 0.6808478583348786,
+        "f1-score": 0.626519001178409,
+        "support": 86288.0
+      },
+      "moderate": {
+        "precision": 0.604020861578298,
+        "recall": 0.5577133448365306,
+        "f1-score": 0.5799441786283892,
+        "support": 88671.0
+      },
+      "open": {
+        "precision": 0.920717392805358,
+        "recall": 0.8929420430575552,
+        "f1-score": 0.9066170346574202,
+        "support": 59734.0
+      },
+      "sparse": {
+        "precision": 0.9080509816339455,
+        "recall": 0.7253153751304183,
+        "f1-score": 0.8064612518235987,
+        "support": 31629.0
+      }
+    },
+    "mean_iou": 0.0,
+    "per_class_iou": {},
+    "support": {
+      "agriculture": 8016,
+      "aquatic_bed": 417,
+      "barren": 1912,
+      "beach": 575,
+      "bog": 2221,
+      "coastal_marsh": 608,
+      "conifer": 107301,
+      "deciduous": 59367,
+      "defense": 156,
+      "developed": 11017,
+      "dune": 82,
+      "fen": 2494,
+      "herbaceous": 393,
+      "industrial": 1490,
+      "infrastructure": 2103,
+      "mixed": 45975,
+      "recreational": 253,
+      "rocky_shore": 47,
+      "scrub": 148,
+      "shrub": 992,
+      "tidal_flat": 149,
+      "water": 3460,
+      "wetland_forest": 1129,
+      "wetland_marsh": 3676,
+      "wetland_shrub": 11984,
+      "wetland_unknown": 357
+    }
+  },
+  "sklearn_version": "1.9.0",
+  "notes": ""
+}

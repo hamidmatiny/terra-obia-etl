@@ -20,7 +20,7 @@ pandas = "^3.0.0"
 openpyxl = "^3.1.0"
 
 # Full terra-OBIA monorepo (TileGrid, CogReader, RasterProfile). Optional because
-# it pulls torch/FastAPI; install with: poetry install --with terra-obia
+# it pulls torch/FastAPI; install with: poetry install --extras terra-obia
 terra-obia = { path = "../terra-OBIA", develop = true, optional = true }
 
 [tool.poetry.group.dev.dependencies]
