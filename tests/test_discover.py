@@ -129,3 +129,19 @@ def test_discovery_ignores_redundant_geojson_kml_gpkg_kmz(
     assert ignored["Non-Forest_Non_forestières.kml"].layer_hint.value == "redundant_format_export"
     assert ignored["Forestry_R_1_2_gdb_export.gpkg"].layer_hint.value == "redundant_format_export"
     assert ignored["Forestry_R_3_4_5_gdb_export.kmz"].layer_hint.value == "redundant_format_export"
+
+
+def test_discovery_ignores_lidar_v1_out_of_scope(sample_source_dir: Path, tmp_path: Path) -> None:
+    """LiDAR sample tiles should be excluded from v1 manifest."""
+    (sample_source_dir / "nb_2024_2497000_7449000.laz").write_bytes(b"LAZ")
+
+    config = PipelineConfig(
+        source_dir=sample_source_dir,
+        paths={"raw_catalog": tmp_path / "catalog"},
+        discover={"include_patterns": ["nb_"], "extensions": [".laz"]},
+    )
+    manifest = run_discovery(config, project_root=tmp_path)
+    ignored = [e for e in manifest.ignored if e.path.endswith(".laz")]
+    assert len(ignored) == 1
+    assert ignored[0].layer_hint.value == "lidar_v1_out_of_scope"
+    assert "v1 out of scope" in ignored[0].reason

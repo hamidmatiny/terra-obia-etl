@@ -59,6 +59,7 @@ class LayerHint(str, Enum):
     ESRI_JSON_EXPORT = "esri_json_export"
     PROVINCE_CSV_EXPORT = "province_csv_export"
     REDUNDANT_FORMAT_EXPORT = "redundant_format_export"
+    LIDAR_V1_OUT_OF_SCOPE = "lidar_v1_out_of_scope"
     UNKNOWN = "unknown"
 
 
@@ -300,6 +301,18 @@ def _redundant_vector_export_reason(name: str, ext: str) -> str | None:
     return None
 
 
+def _lidar_v1_out_of_scope_reason(name: str, ext: str) -> str | None:
+    """Return ignore reason for LiDAR tiles excluded from v1 polygon-label pipeline."""
+    if ext != ".laz":
+        return None
+    if _infer_layer(name) != LayerHint.LIDAR:
+        return None
+    return (
+        "v1 out of scope — sample tiles only (~5 km² total); polygon labels sufficient; "
+        "imagery required separately for pixel segmentation"
+    )
+
+
 def _classify_file(
     path: Path,
     patterns: list[re.Pattern[str]],
@@ -380,6 +393,17 @@ def _classify_file(
             decision=DiscoveryDecision.IGNORED,
             reason=redundant,
             layer_hint=LayerHint.REDUNDANT_FORMAT_EXPORT,
+        )
+
+    lidar_skip = _lidar_v1_out_of_scope_reason(name, ext)
+    if lidar_skip:
+        return ManifestEntry(
+            path=str(path),
+            extension=ext,
+            size_bytes=stat.st_size,
+            decision=DiscoveryDecision.IGNORED,
+            reason=lidar_skip,
+            layer_hint=LayerHint.LIDAR_V1_OUT_OF_SCOPE,
         )
 
     if _name_matches(name, patterns) or layer_hint != LayerHint.UNKNOWN:
