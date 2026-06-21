@@ -16,6 +16,7 @@ from terra_etl.clean.csv_validate import CsvValidationReport
 from terra_etl.config import PipelineConfig
 from terra_etl.discover import run_discovery
 from terra_etl.discover.scanner import DiscoveryManifest
+from terra_etl.harmonize.harmonize import HarmonizeReport, run_harmonize
 from terra_etl.ingest.models import IngestReport
 from terra_etl.ingest.zip import ingest_zips
 
@@ -31,6 +32,7 @@ class PipelineResult:
     csv_validation: CsvValidationReport | None = None
     vector_csv_validation: CsvValidationReport | None = None
     pruned_hydro_dirs: list[str] | None = None
+    harmonize: HarmonizeReport | None = None
 
 
 def run_pipeline(
@@ -40,6 +42,7 @@ def run_pipeline(
     project_root: Path | None = None,
     ingest_zip: bool = True,
     clean_forest: bool = True,
+    harmonize: bool = False,
 ) -> PipelineResult:
     """Run discover and enabled ingest/clean stages."""
     root = project_root or Path.cwd()
@@ -81,5 +84,20 @@ def run_pipeline(
             csv_paths,
             resolved.paths.interim,
         )
+
+    if (
+        harmonize
+        and result.forest_clean is not None
+        and result.forest_clean.passed
+        and result.vector_clean is not None
+        and result.vector_clean.passed
+    ):
+        _combined, harmonize_report = run_harmonize(
+            resolved.paths.interim,
+            resolved.paths.raw_catalog,
+            resolved.paths.processed,
+            target_crs_epsg=resolved.target_crs_epsg,
+        )
+        result.harmonize = harmonize_report
 
     return result
