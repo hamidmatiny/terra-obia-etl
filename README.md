@@ -53,6 +53,20 @@ poetry run python scripts/train_and_evaluate_stand_classifier.py \
 Documented model artifacts: `models/stand_geonb_v1_balanced/` (balanced sample
 weights — preferred over unweighted baseline for per-class equity).
 
+### Hand off to terra-OBIA for inference
+
+From a sibling `terra-OBIA` checkout (one command — no manual file copies):
+
+```bash
+cd ../terra-OBIA
+poetry run terra-register-etl-model
+# optional: poetry run terra-register-etl-model --mode copy
+```
+
+That registers `models/stand_geonb_v1_balanced` under terra-OBIA's `models/` so
+the API (`GET /v1/models`) and `terra-predict-stands` can load it. See
+terra-OBIA `docs/classification.md` § ETL → OBIA model handoff.
+
 ## Layout
 
 ```
