@@ -99,9 +99,7 @@ def is_province_scale_forest_csv(path: Path) -> bool:
     # GeoNB province export naming convention observed in Downloads
     if re.search(r"forest.*for[eê]t|for[eê]t.*forest", name):
         return True
-    if "20260620" in name and "forest" in name:
-        return True
-    return False
+    return bool("20260620" in name and "forest" in name)
 
 
 def match_regional_forest_csv(path: Path) -> str | None:
@@ -213,7 +211,7 @@ def _validate_csv_against_gpkg(
         msg_parts.append(f"{len(missing_in_csv)} {id_column} in gpkg not in csv")
     message = "; ".join(msg_parts) if msg_parts else f"row count and {id_column} sets match"
 
-    record_kwargs = dict(
+    return CsvValidationRecord(
         csv_path=str(csv_path.resolve()),
         gpkg_path=str(gpkg_path.resolve()),
         region_id=region_id,
@@ -228,16 +226,12 @@ def _validate_csv_against_gpkg(
         id_overlap_pct=round(overlap_pct, 4),
         passed=passed,
         message=message,
+        stdlab_csv_unique=len(csv_set) if id_column == "STDLAB" else 0,
+        stdlab_gpkg_unique=len(gpkg_set) if id_column == "STDLAB" else 0,
+        stdlab_in_csv_not_gpkg=len(missing_in_gpkg) if id_column == "STDLAB" else 0,
+        stdlab_in_gpkg_not_csv=len(missing_in_csv) if id_column == "STDLAB" else 0,
+        stdlab_overlap_pct=round(overlap_pct, 4) if id_column == "STDLAB" else 0.0,
     )
-    if id_column == "STDLAB":
-        record_kwargs.update(
-            stdlab_csv_unique=len(csv_set),
-            stdlab_gpkg_unique=len(gpkg_set),
-            stdlab_in_csv_not_gpkg=len(missing_in_gpkg),
-            stdlab_in_gpkg_not_csv=len(missing_in_csv),
-            stdlab_overlap_pct=round(overlap_pct, 4),
-        )
-    return CsvValidationRecord(**record_kwargs)
 
 
 def validate_non_forest_wetland_csvs(

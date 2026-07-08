@@ -5,7 +5,6 @@ from __future__ import annotations
 from pathlib import Path
 
 import pytest
-
 from terra_etl.config import PipelineConfig
 from terra_etl.discover.scanner import DiscoveryDecision, run_discovery
 
@@ -14,7 +13,9 @@ from terra_etl.discover.scanner import DiscoveryDecision, run_discovery
 def sample_source_dir(tmp_path: Path) -> Path:
     """Create a minimal fake Downloads tree with relevant and irrelevant files."""
     (tmp_path / "Forest_stand.csv").write_text("id,class\n1,forest\n")
-    (tmp_path / "Wetland_Terres_humides.geojson").write_text('{"type":"FeatureCollection","features":[]}')
+    (tmp_path / "Wetland_Terres_humides.geojson").write_text(
+        '{"type":"FeatureCollection","features":[]}',
+    )
     (tmp_path / "tax_return_2024.pdf").write_text("not scanned")
     (tmp_path / "random_notes.txt").write_text("unrelated")
     (tmp_path / "Forestry_R_1_2_gdb_meta.txt").write_text("metadata sidecar")
@@ -83,7 +84,9 @@ def test_discovery_excludes_esri_json_txt_exports(
     assert esri_entries[0].layer_hint.value == "esri_json_export"
     assert "ArcGIS REST Feature Layer JSON" in esri_entries[0].reason
 
-    meta_entries = [e for e in manifest.included if Path(e.path).name == "Forestry_R_1_2_gdb_meta.txt"]
+    meta_entries = [
+        e for e in manifest.included if Path(e.path).name == "Forestry_R_1_2_gdb_meta.txt"
+    ]
     assert len(meta_entries) == 1
     assert meta_entries[0].layer_hint.value == "metadata"
 

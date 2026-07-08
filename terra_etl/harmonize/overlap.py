@@ -6,11 +6,10 @@ import logging
 import time
 from collections.abc import Callable
 from dataclasses import dataclass, field
-from typing import Any
+from typing import Any, cast
 
 import geopandas as gpd
 import numpy as np
-import pandas as pd
 from rasterio.features import rasterize
 from rasterio.transform import from_origin
 
@@ -53,6 +52,7 @@ class ProvincialGrid:
 
     @property
     def cell_area_m2(self) -> float:
+        """Return the area of one raster cell in square metres."""
         return self.cell_size * self.cell_size
 
 
@@ -76,7 +76,10 @@ class OverlapAudit:
 
 
 def _log(msg: str, log: LogFn | None = None) -> None:
-    (log or print)(msg, flush=True)
+    if log is not None:
+        log(msg)
+    else:
+        print(msg, flush=True)
 
 
 def _pair_key(high: str, low: str) -> str:
@@ -153,7 +156,7 @@ def burn_layer(
         f"{cells:,} cells ({cells * grid.cell_area_m2 / 1e6:.1f} km²) in {elapsed:.1f}s",
         log,
     )
-    return burned
+    return cast(np.ndarray, burned)
 
 
 def burn_all_layers(

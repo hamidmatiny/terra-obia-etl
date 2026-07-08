@@ -5,9 +5,8 @@ from __future__ import annotations
 from pathlib import Path
 
 import pytest
-
 from terra_etl.config import PipelineConfig
-from terra_etl.discover.scanner import DiscoveryDecision, run_discovery
+from terra_etl.discover.scanner import run_discovery
 
 
 @pytest.fixture
@@ -39,4 +38,5 @@ def test_discovery_keeps_only_fgdb_hydrography_zip(hydro_source_dir: Path, tmp_p
     assert "geonb_nbhn-rhnb_shp.zip" in ignored
     assert "geonb_nbhn-rhnb_lpk.zip" in ignored
     assert "FileGDB only" in ignored["geonb_nbhn-rhnb_shp.zip"]
-    assert ignored["geonb_nbhn-rhnb_shp.zip"] and manifest.ignored[0].layer_hint.value == "hydrography"
+    shp_reason = ignored["geonb_nbhn-rhnb_shp.zip"]
+    assert shp_reason and manifest.ignored[0].layer_hint.value == "hydrography"

@@ -6,9 +6,7 @@ from pathlib import Path
 
 import geopandas as gpd
 import pandas as pd
-import pytest
 from shapely.geometry import Polygon
-
 from terra_etl.clean.csv_validate import (
     is_province_scale_forest_csv,
     match_layer_tabular_csv,
@@ -38,9 +36,11 @@ def test_validate_regional_forest_csvs_passes_matching_std(tmp_path: Path) -> No
 
     gpkg_path = tmp_path / "forest" / "r6_7.gpkg"
     gpkg_path.parent.mkdir(parents=True)
+    poly_a = Polygon([(0, 0), (1, 0), (1, 1), (0, 0)])
+    poly_b = Polygon([(2, 2), (3, 2), (3, 3), (2, 2)])
     gdf = gpd.GeoDataFrame(
         {"STDLAB": ["100", "200"]},
-        geometry=[Polygon([(0, 0), (1, 0), (1, 1), (0, 0)]), Polygon([(2, 2), (3, 2), (3, 3), (2, 2)])],
+        geometry=[poly_a, poly_b],
         crs="EPSG:3857",
     )
     gdf.to_file(gpkg_path, driver="GPKG")
@@ -53,7 +53,10 @@ def test_validate_regional_forest_csvs_passes_matching_std(tmp_path: Path) -> No
 
 def test_match_layer_tabular_csv() -> None:
     """Non-forest and wetland CSV filenames should map to layer ids."""
-    assert match_layer_tabular_csv(Path("Non-Forest_Non_forestières.csv")) == ("non_forest", "OBJECTID")
+    assert match_layer_tabular_csv(Path("Non-Forest_Non_forestières.csv")) == (
+        "non_forest",
+        "OBJECTID",
+    )
     assert match_layer_tabular_csv(Path("Wetland_Terres_humides.csv")) == ("wetland", "OBJECTID")
     assert match_layer_tabular_csv(Path("Forest_R6_7_test.csv")) is None
 
@@ -65,9 +68,11 @@ def test_validate_non_forest_wetland_csvs(tmp_path: Path) -> None:
 
     gpkg_path = tmp_path / "wetland" / "wetland.gpkg"
     gpkg_path.parent.mkdir(parents=True)
+    poly_a = Polygon([(0, 0), (1, 0), (1, 1), (0, 0)])
+    poly_b = Polygon([(2, 2), (3, 2), (3, 3), (2, 2)])
     gdf = gpd.GeoDataFrame(
         {"OBJECTID": [1, 2], "WC": ["SB", "BM"]},
-        geometry=[Polygon([(0, 0), (1, 0), (1, 1), (0, 0)]), Polygon([(2, 2), (3, 2), (3, 3), (2, 2)])],
+        geometry=[poly_a, poly_b],
         crs="EPSG:2953",
     )
     gdf.to_file(gpkg_path, driver="GPKG")

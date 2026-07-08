@@ -3,13 +3,14 @@
 from __future__ import annotations
 
 import os
+from collections.abc import Iterator
 from contextlib import contextmanager
 from dataclasses import asdict, dataclass, field
 from typing import Any, Literal
 
 import geopandas as gpd
 import pandas as pd
-from shapely.geometry import LinearRing, MultiPolygon, Polygon
+from shapely.geometry import GeometryCollection, LinearRing, MultiPolygon, Polygon
 from shapely.geometry.base import BaseGeometry
 from shapely.validation import explain_validity
 
@@ -115,7 +116,7 @@ class GeometryCleanReport:
 
 
 @contextmanager
-def ogr_skip_polygon_autocorrect():
+def ogr_skip_polygon_autocorrect() -> Iterator[None]:
     """Disable GDAL polygon ring auto-correction so invalidity is detected explicitly."""
     previous = os.environ.get("OGR_ORGANIZE_POLYGONS")
     os.environ["OGR_ORGANIZE_POLYGONS"] = "SKIP"
@@ -165,11 +166,11 @@ def exterior_ring_footprint(geom: BaseGeometry) -> BaseGeometry:
     def collect_exterior_solids(part: BaseGeometry) -> list[Polygon]:
         if part.is_empty:
             return []
-        if part.geom_type == "Polygon":
+        if isinstance(part, Polygon):
             return [solid_exterior(part)]
-        if part.geom_type == "MultiPolygon":
+        if isinstance(part, MultiPolygon):
             return [solid_exterior(p) for p in part.geoms if not p.is_empty]
-        if part.geom_type == "GeometryCollection":
+        if isinstance(part, GeometryCollection):
             solids: list[Polygon] = []
             for sub in part.geoms:
                 solids.extend(collect_exterior_solids(sub))
@@ -393,7 +394,6 @@ def clean_geometries_split_policy(
             buffered_pct = relative_area_change(area_raw, float(buffered.area))
             method: RepairMethod = "buffer0"
             final_geom = buffered
-            pct = buffered_pct
 
             if not buffered.is_valid or buffered_pct > area_change_threshold:
                 exterior = repair_invalid_geometry(original, method="exterior_ring")
@@ -404,7 +404,6 @@ def clean_geometries_split_policy(
                 if use_exterior:
                     method = "exterior_ring"
                     final_geom = exterior
-                    pct = exterior_pct
                     repair_exterior_ring_count += 1
                 else:
                     repair_buffer0_count += 1

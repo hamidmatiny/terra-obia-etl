@@ -13,6 +13,7 @@ from terra_etl.harmonize.mapping import (
 
 
 def test_forest_funa_mapping() -> None:
+    """Forest FUNA codes map to canonical cover types."""
     assert map_forest_cover_type("BSPR", None) == "conifer"
     assert map_forest_cover_type("IHHW", None) == "deciduous"
     assert map_forest_cover_type("BFMX", None) == "mixed"
@@ -21,6 +22,7 @@ def test_forest_funa_mapping() -> None:
 
 
 def test_forest_canopy_mapping() -> None:
+    """Forest canopy closure classes map to canonical labels."""
     assert map_forest_canopy(0, None) == "open"
     assert map_forest_canopy(1, None) == "sparse"
     assert map_forest_canopy(2, None) == "moderate"
@@ -29,6 +31,7 @@ def test_forest_canopy_mapping() -> None:
 
 
 def test_non_forest_mapping() -> None:
+    """Non-forest PLU/LC codes map to cover and canopy classes."""
     assert map_non_forest_cover("SET", "VT") == "developed"
     assert map_non_forest_cover("WIL", "NV") == "barren"
     assert map_non_forest_cover("AGR", "VG") == "agriculture"
@@ -37,6 +40,7 @@ def test_non_forest_mapping() -> None:
 
 
 def test_wetland_mapping() -> None:
+    """Wetland WC/WRI codes map to cover and canopy classes."""
     assert map_wetland_cover("BO") == "bog"
     assert map_wetland_cover("FW") == "wetland_forest"
     assert map_wetland_canopy("FW", "SA") == "sparse"

@@ -32,6 +32,7 @@ def ingest_zips(
         manifest_path: Path to ``manifest.json`` from the discover stage.
         output_root: Typically ``data/raw_catalog``.
         entries: Optional pre-filtered entries; loads from manifest when omitted.
+        hydrography_preferred_format: Preferred hydrography container (``fgdb`` or ``shp``).
 
     Returns:
         IngestReport with per-zip extraction outcomes.
@@ -121,9 +122,7 @@ def _safe_extract_member(zf: zipfile.ZipFile, member: str, dest_dir: Path) -> No
 
 def _list_extracted_relative(dest_dir: Path) -> list[str]:
     """List extracted files relative to dest_dir."""
-    return sorted(
-        str(p.relative_to(dest_dir)) for p in dest_dir.rglob("*") if p.is_file()
-    )
+    return sorted(str(p.relative_to(dest_dir)) for p in dest_dir.rglob("*") if p.is_file())
 
 
 def _slugify(name: str) -> str:

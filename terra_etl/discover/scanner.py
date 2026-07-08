@@ -10,8 +10,8 @@ from datetime import UTC, datetime
 from enum import Enum
 from pathlib import Path
 
-from terra_etl.config import PipelineConfig
 from terra_etl.clean.csv_validate import is_province_scale_forest_csv
+from terra_etl.config import PipelineConfig
 from terra_etl.ingest.manifest import hydrography_zip_format
 
 # GeoNB zip internals often contain shapefile / gdb / geojson components.
@@ -165,7 +165,10 @@ def run_discovery(
         msg = f"source_dir does not exist or is not a directory: {source_dir}"
         raise FileNotFoundError(msg)
 
-    extensions = {ext.lower() if ext.startswith(".") else f".{ext.lower()}" for ext in config.discover.extensions}
+    extensions = {
+        ext.lower() if ext.startswith(".") else f".{ext.lower()}"
+        for ext in config.discover.extensions
+    }
     patterns = [_compile_pattern(p) for p in config.discover.include_patterns]
     preferred_hydro = config.hydrography.preferred_format.lower()
 
@@ -334,7 +337,8 @@ def _classify_file(
                 decision=DiscoveryDecision.IGNORED,
                 reason=(
                     "ArcGIS REST Feature Layer JSON export (.txt); redundant with "
-                    "shapefile/CSV/GPKG in manifest; Web Mercator (WKID 102100) vs target EPSG:32619"
+                    "shapefile/CSV/GPKG in manifest; Web Mercator (WKID 102100) "
+                    "vs target EPSG:32619"
                 ),
                 layer_hint=LayerHint.ESRI_JSON_EXPORT,
             )

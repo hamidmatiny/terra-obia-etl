@@ -6,10 +6,11 @@ import argparse
 import sys
 from pathlib import Path
 
-from terra_etl.config import PipelineConfig
 from terra_etl.clean.geometry import GeometryCleanReport
+from terra_etl.config import PipelineConfig
 from terra_etl.discover import run_discovery
 from terra_etl.harmonize import run_harmonize
+from terra_etl.harmonize.harmonize import HarmonizeReport
 from terra_etl.pipeline import run_pipeline
 
 
@@ -48,7 +49,11 @@ def _cmd_discover(args: argparse.Namespace) -> int:
     return 0
 
 
-def _print_geometry_clean_report(clean, audit_path: Path, title: str) -> None:
+def _print_geometry_clean_report(
+    clean: GeometryCleanReport,
+    audit_path: Path,
+    title: str,
+) -> None:
     """Print geometry clean summary for one layer group."""
     print(f"\n{title}: {'PASSED' if clean.passed else 'FAILED'}")
     print(f"Audit: {audit_path}")
@@ -69,7 +74,12 @@ def _print_geometry_clean_report(clean, audit_path: Path, title: str) -> None:
         )
 
 
-def _print_harmonize_report(report, processed_dir: Path, *, audit_name: str = "harmonize_audit.json") -> None:
+def _print_harmonize_report(
+    report: HarmonizeReport,
+    processed_dir: Path,
+    *,
+    audit_name: str = "harmonize_audit.json",
+) -> None:
     """Print harmonize summary including class distributions and overlap audit."""
     print(f"\nHarmonize: {'PASSED' if report.passed else 'FAILED'}")
     print(f"Output GPKG: {report.output_gpkg}")
@@ -196,11 +206,11 @@ def _cmd_run(args: argparse.Namespace) -> int:
         val = result.csv_validation
         print(f"\nRegional forest CSV validation: {'PASSED' if val.passed else 'FAILED'}")
         print(f"Audit: {config.paths.interim / 'validate_forest_csv.json'}")
-        for record in val.records:
-            status = "ok" if record.passed else "FAIL"
+        for csv_record in val.records:
+            status = "ok" if csv_record.passed else "FAIL"
             print(
-                f"  [{status}] {Path(record.csv_path).name} vs {Path(record.gpkg_path).name}: "
-                f"{record.message}"
+                f"  [{status}] {Path(csv_record.csv_path).name} vs "
+                f"{Path(csv_record.gpkg_path).name}: {csv_record.message}"
             )
         if not val.passed:
             return 1
@@ -209,11 +219,11 @@ def _cmd_run(args: argparse.Namespace) -> int:
         val = result.vector_csv_validation
         print(f"\nNon-forest / wetland CSV validation: {'PASSED' if val.passed else 'FAILED'}")
         print(f"Audit: {config.paths.interim / 'validate_non_forest_wetland_csv.json'}")
-        for record in val.records:
-            status = "ok" if record.passed else "FAIL"
+        for csv_record in val.records:
+            status = "ok" if csv_record.passed else "FAIL"
             print(
-                f"  [{status}] {Path(record.csv_path).name} vs {Path(record.gpkg_path).name}: "
-                f"{record.message}"
+                f"  [{status}] {Path(csv_record.csv_path).name} vs "
+                f"{Path(csv_record.gpkg_path).name}: {csv_record.message}"
             )
         if not val.passed:
             return 1
@@ -258,7 +268,10 @@ def main(argv: list[str] | None = None) -> None:
         help="Run harmonize after clean/validation stages",
     )
 
-    harmonize_parser = sub.add_parser("harmonize", help="Harmonize interim layers to labeled training data")
+    harmonize_parser = sub.add_parser(
+        "harmonize",
+        help="Harmonize interim layers to labeled training data",
+    )
     harmonize_parser.add_argument(
         "--config",
         required=True,

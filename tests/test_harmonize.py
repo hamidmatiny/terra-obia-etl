@@ -6,7 +6,6 @@ from pathlib import Path
 
 import geopandas as gpd
 from shapely.geometry import box
-
 from terra_etl.harmonize.harmonize import run_harmonize
 from terra_etl.harmonize.overlap import apply_priority_clipping, compute_pairwise_overlaps
 
@@ -58,6 +57,7 @@ def test_priority_clipping_removes_forest_under_water() -> None:
 
 
 def test_run_harmonize_on_fixture_interim(tmp_path: Path) -> None:
+    """Harmonize fixture interim layers into labeled training outputs."""
     interim = tmp_path / "interim"
     forest_dir = interim / "forest"
     forest_dir.mkdir(parents=True)

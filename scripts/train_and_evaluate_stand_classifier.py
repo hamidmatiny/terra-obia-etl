@@ -8,15 +8,17 @@ from collections import Counter
 from pathlib import Path
 
 import numpy as np
-import pandas as pd
 from sklearn.metrics import confusion_matrix
 from sklearn.model_selection import train_test_split
-
 from terra_core.classification.evaluation import write_accuracy_report_markdown
 from terra_core.classification.features import labeled_frame_to_features
 from terra_core.classification.models import AccuracyReport
 from terra_core.classification.registry import load_model_artifact
-from terra_core.classification.training import TrainingConfig, load_labeled_dataset, train_stand_classifier
+from terra_core.classification.training import (
+    TrainingConfig,
+    load_labeled_dataset,
+    train_stand_classifier,
+)
 
 FEATURE_COLUMNS = [
     "area_m2",
@@ -122,6 +124,7 @@ def _parse_args() -> argparse.Namespace:
 
 
 def main() -> None:
+    """Train a stand classifier and write extended evaluation artifacts."""
     args = _parse_args()
     data_path = Path(args.data_path)
     output_dir = Path(args.output_dir)
@@ -190,16 +193,12 @@ def main() -> None:
         "cover_type_metrics": metrics["cover_type_metrics"],
         "canopy_closure_metrics": metrics["canopy_closure_metrics"],
         "rare_cover_type_metrics": {
-            k: v
-            for k, v in metrics["cover_type_metrics"].items()
-            if k in RARE_CLASSES
+            k: v for k, v in metrics["cover_type_metrics"].items() if k in RARE_CLASSES
         },
         "mixed_confusion_breakdown": _mixed_confusion_breakdown(y_cover_test, cover_pred),
         "top_cover_confusions": cover_pairs,
         "top_canopy_confusions": canopy_pairs,
-        "cover_feature_importances": _feature_importances(
-            loaded.cover_type_model, feature_columns
-        ),
+        "cover_feature_importances": _feature_importances(loaded.cover_type_model, feature_columns),
         "canopy_feature_importances": _feature_importances(
             loaded.canopy_closure_model, feature_columns
         ),

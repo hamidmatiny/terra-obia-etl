@@ -13,8 +13,8 @@ import pandas as pd
 
 from terra_etl.harmonize.mapping import (
     add_shape_metrics,
-    encode_lc_code,
     encode_l1_ds,
+    encode_lc_code,
     encode_numeric,
     encode_wri_code,
     map_forest_canopy,
@@ -25,11 +25,11 @@ from terra_etl.harmonize.mapping import (
     map_wetland_cover,
 )
 from terra_etl.harmonize.overlap import (
+    DEFAULT_CELL_SIZE_M,
     apply_priority_clipping,
     build_provincial_grid,
     burn_all_layers,
     compute_pairwise_overlaps_from_burns,
-    DEFAULT_CELL_SIZE_M,
 )
 
 _HYDRO_LAYER = "NBHN_0000_02_Wb"
@@ -222,17 +222,24 @@ def _load_hydro(raw_catalog: Path) -> gpd.GeoDataFrame:
 def _select_output_columns(gdf: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     for col in _OUTPUT_COLUMNS:
         if col not in gdf.columns and col != "geometry":
-            gdf[col] = float("nan") if col not in {
-                "source_layer",
-                "source_id",
-                "lb_cat",
-                "cover_type",
-                "canopy_closure_class",
-            } else ""
+            gdf[col] = (
+                float("nan")
+                if col
+                not in {
+                    "source_layer",
+                    "source_id",
+                    "lb_cat",
+                    "cover_type",
+                    "canopy_closure_class",
+                }
+                else ""
+            )
     return gdf[_OUTPUT_COLUMNS]
 
 
-def _clip_layers_to_forest_bounds(layers: dict[str, gpd.GeoDataFrame]) -> dict[str, gpd.GeoDataFrame]:
+def _clip_layers_to_forest_bounds(
+    layers: dict[str, gpd.GeoDataFrame],
+) -> dict[str, gpd.GeoDataFrame]:
     """Restrict all layers to the forest union bounds (for subset dry runs)."""
     forest = layers.get("forest")
     if forest is None or forest.empty:
@@ -277,7 +284,8 @@ def run_harmonize(
     print("Loading non-forest...", flush=True)
     t0 = time.perf_counter()
     non_forest = _reproject(_load_non_forest(interim), target_crs)
-    print(f"  {len(non_forest):,} non-forest features ({time.perf_counter() - t0:.1f}s)", flush=True)
+    elapsed = time.perf_counter() - t0
+    print(f"  {len(non_forest):,} non-forest features ({elapsed:.1f}s)", flush=True)
 
     print("Loading wetland...", flush=True)
     t0 = time.perf_counter()

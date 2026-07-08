@@ -5,14 +5,14 @@ from __future__ import annotations
 from dataclasses import dataclass
 from pathlib import Path
 
-from terra_etl.clean.forest import clean_forest_geometries, prune_redundant_hydrography_extracts
 from terra_etl.clean.csv_validate import (
+    CsvValidationReport,
     validate_non_forest_wetland_csvs,
     validate_regional_forest_csvs,
 )
-from terra_etl.clean.vector import clean_vector_geometries
+from terra_etl.clean.forest import clean_forest_geometries, prune_redundant_hydrography_extracts
 from terra_etl.clean.geometry import GeometryCleanReport
-from terra_etl.clean.csv_validate import CsvValidationReport
+from terra_etl.clean.vector import clean_vector_geometries
 from terra_etl.config import PipelineConfig
 from terra_etl.discover import run_discovery
 from terra_etl.discover.scanner import DiscoveryManifest

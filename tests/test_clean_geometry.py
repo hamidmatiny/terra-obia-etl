@@ -7,7 +7,6 @@ from pathlib import Path
 import geopandas as gpd
 import pytest
 from shapely.geometry import Polygon
-
 from terra_etl.clean.geometry import (
     audit_baseline_area,
     clean_geometries_split_policy,
