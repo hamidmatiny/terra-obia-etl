@@ -5,8 +5,9 @@ non-forest, wetland, and hydrography layers for New Brunswick) and produces
 **harmonized, labeled stand polygons** for training classifiers in
 [terra-OBIA](https://github.com/hamidmatiny/terra-OBIA).
 
-v1 delivers **1.33M inventory-labeled polygons** with 26 `cover_type` classes and
-4 `canopy_closure_class` bins, plus a trained gradient-boosting stand classifier
+v1 delivers **1.33M inventory-labeled polygons** (documented harmonize run; see
+`docs/PROJECT_HISTORY.md` §4) with 26 `cover_type` classes and 4
+`canopy_closure_class` bins, plus a trained gradient-boosting stand classifier
 using shape metrics and provincial inventory attributes. There is **no raster
 imagery** in the source data — pixel segmentation and COG export are deferred to
 v2 when imagery is sourced.

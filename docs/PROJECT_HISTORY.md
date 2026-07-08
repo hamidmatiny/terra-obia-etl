@@ -28,7 +28,7 @@ boosting model on OBIA object features, not a U-Net on rasters.
 
 | Repo | Role |
 |------|------|
-| **terra-OBIA** | Core library: tiling, COG I/O contracts, stand delineation classifier, API stubs |
+| **terra-OBIA** | Core library: tiling, segmentation, classification, REST API, review dashboard |
 | **terra-obia-etl** | Province-specific ingestion, cleaning, harmonization, label design |
 
 We kept them **separate-but-mergeable** deliberately:
