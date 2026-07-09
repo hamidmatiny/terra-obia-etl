@@ -1,0 +1,553 @@
+{
+  "protocol": {
+    "features": [
+      "area_m2",
+      "perimeter_m",
+      "compactness",
+      "l1_ds",
+      "l1_sc",
+      "l1_vs",
+      "l1_pstock",
+      "lc_code",
+      "wri_code",
+      "spvc"
+    ],
+    "test_size": 0.2,
+    "random_state": 42,
+    "stratify": "cover_type",
+    "data": "/Users/hamidrezamatiny/Cursor/terra-obia-etl/data/processed/labeled_stands.csv",
+    "n_rows": 1331610,
+    "train_rows": 1065288,
+    "test_rows": 266322,
+    "evaluation": "overall_accuracy_mean = mean(cover_accuracy, canopy_accuracy) via compute_object_classification_metrics (same as production)",
+    "leakage_controls": [
+      "Single train_test_split call; test partition only used in predict/metrics",
+      "No hyperparameter search on test",
+      "XGBoost label maps built from train classes only"
+    ]
+  },
+  "results": [
+    {
+      "name": "existing_baseline_stand_geonb_v1",
+      "train_rows": 1065288,
+      "test_rows": 266322,
+      "cover_accuracy": 0.5330276882871111,
+      "canopy_accuracy": 0.6927028183927727,
+      "overall_accuracy_mean": 0.6128652533399419,
+      "cover_macro_f1": 0.27166401777260546,
+      "cover_weighted_f1": 0.439880293361972,
+      "forest_cover_accuracy": 0.5161749975310732,
+      "conifer_recall": 0.9266922023093913,
+      "deciduous_recall": 0.17386763690265636,
+      "mixed_recall": 8.700380641653073e-05,
+      "top_cover_confusions": [
+        {
+          "true": "deciduous",
+          "predicted": "conifer",
+          "count": 48618
+        },
+        {
+          "true": "mixed",
+          "predicted": "conifer",
+          "count": 39717
+        },
+        {
+          "true": "conifer",
+          "predicted": "deciduous",
+          "count": 7604
+        },
+        {
+          "true": "mixed",
+          "predicted": "deciduous",
+          "count": 6035
+        },
+        {
+          "true": "agriculture",
+          "predicted": "developed",
+          "count": 2978
+        },
+        {
+          "true": "wetland_marsh",
+          "predicted": "wetland_shrub",
+          "count": 2885
+        },
+        {
+          "true": "developed",
+          "predicted": "agriculture",
+          "count": 1989
+        },
+        {
+          "true": "water",
+          "predicted": "deciduous",
+          "count": 1566
+        }
+      ],
+      "notes": "Committed artifact; trained on full CSV with same split seed (no class_weight)",
+      "wall_seconds": 7.3607357920045615
+    },
+    {
+      "name": "existing_balanced_stand_geonb_v1_balanced",
+      "train_rows": 1065288,
+      "test_rows": 266322,
+      "cover_accuracy": 0.4113253880640728,
+      "canopy_accuracy": 0.689563761161301,
+      "overall_accuracy_mean": 0.5504445746126869,
+      "cover_macro_f1": 0.41212260847273285,
+      "cover_weighted_f1": 0.442135747323245,
+      "forest_cover_accuracy": 0.3788462352393448,
+      "conifer_recall": 0.3963616368906161,
+      "deciduous_recall": 0.40652214193070224,
+      "mixed_recall": 0.3022294725394236,
+      "top_cover_confusions": [
+        {
+          "true": "conifer",
+          "predicted": "deciduous",
+          "count": 32065
+        },
+        {
+          "true": "conifer",
+          "predicted": "mixed",
+          "count": 23003
+        },
+        {
+          "true": "mixed",
+          "predicted": "deciduous",
+          "count": 14407
+        },
+        {
+          "true": "deciduous",
+          "predicted": "mixed",
+          "count": 13186
+        },
+        {
+          "true": "deciduous",
+          "predicted": "conifer",
+          "count": 10573
+        },
+        {
+          "true": "mixed",
+          "predicted": "conifer",
+          "count": 10162
+        },
+        {
+          "true": "deciduous",
+          "predicted": "wetland_unknown",
+          "count": 5233
+        },
+        {
+          "true": "conifer",
+          "predicted": "wetland_unknown",
+          "count": 3908
+        }
+      ],
+      "notes": "Committed artifact; trained on full CSV with same split seed (class_weight=balanced)",
+      "wall_seconds": 7.4352598330006
+    },
+    {
+      "name": "existing_stratified_on_its_own_holdout",
+      "train_rows": 286715,
+      "test_rows": 71679,
+      "cover_accuracy": 0.5827229732557653,
+      "canopy_accuracy": 0.8143110255444412,
+      "overall_accuracy_mean": 0.6985169994001033,
+      "cover_macro_f1": 0.36565499593881257,
+      "cover_weighted_f1": 0.5581114051121792,
+      "forest_cover_accuracy": 0.3635555555555556,
+      "conifer_recall": 0.3805,
+      "deciduous_recall": 0.4056666666666667,
+      "mixed_recall": 0.3045,
+      "top_cover_confusions": [
+        {
+          "true": "agriculture",
+          "predicted": "developed",
+          "count": 3089
+        },
+        {
+          "true": "wetland_marsh",
+          "predicted": "wetland_shrub",
+          "count": 2901
+        },
+        {
+          "true": "conifer",
+          "predicted": "deciduous",
+          "count": 1863
+        },
+        {
+          "true": "mixed",
+          "predicted": "deciduous",
+          "count": 1841
+        },
+        {
+          "true": "developed",
+          "predicted": "agriculture",
+          "count": 1756
+        },
+        {
+          "true": "deciduous",
+          "predicted": "mixed",
+          "count": 1364
+        },
+        {
+          "true": "mixed",
+          "predicted": "conifer",
+          "count": 1341
+        },
+        {
+          "true": "conifer",
+          "predicted": "mixed",
+          "count": 1305
+        }
+      ],
+      "notes": "Committed stratified smoke artifact evaluated on holdout from the SAME capped 358k sample (optimistic; majority forest classes capped)",
+      "wall_seconds": 0.8802810420020251
+    },
+    {
+      "name": "existing_stratified_on_full_holdout",
+      "train_rows": 286715,
+      "test_rows": 266322,
+      "cover_accuracy": 0.4338545069502332,
+      "canopy_accuracy": 0.6914073940568184,
+      "overall_accuracy_mean": 0.5626309505035259,
+      "cover_macro_f1": 0.3578425281898217,
+      "cover_weighted_f1": 0.45078926007828646,
+      "forest_cover_accuracy": 0.37660774161387867,
+      "conifer_recall": 0.3882349651913775,
+      "deciduous_recall": 0.4097899506459818,
+      "mixed_recall": 0.3066231647634584,
+      "top_cover_confusions": [
+        {
+          "true": "conifer",
+          "predicted": "deciduous",
+          "count": 32226
+        },
+        {
+          "true": "conifer",
+          "predicted": "mixed",
+          "count": 23693
+        },
+        {
+          "true": "mixed",
+          "predicted": "deciduous",
+          "count": 14531
+        },
+        {
+          "true": "deciduous",
+          "predicted": "mixed",
+          "count": 13211
+        },
+        {
+          "true": "deciduous",
+          "predicted": "conifer",
+          "count": 10340
+        },
+        {
+          "true": "mixed",
+          "predicted": "conifer",
+          "count": 9832
+        },
+        {
+          "true": "deciduous",
+          "predicted": "water",
+          "count": 9569
+        },
+        {
+          "true": "conifer",
+          "predicted": "water",
+          "count": 7814
+        }
+      ],
+      "notes": "Same stratified artifact scored on the FULL-province holdout (distribution shift vs its capped training sample)",
+      "wall_seconds": 3.766547625004023
+    },
+    {
+      "name": "lightgbm_unweighted",
+      "train_rows": 1065288,
+      "test_rows": 266322,
+      "cover_accuracy": 0.1092399426258439,
+      "canopy_accuracy": 0.6919518477632339,
+      "overall_accuracy_mean": 0.4005958951945389,
+      "cover_macro_f1": 0.01961829147190456,
+      "cover_weighted_f1": 0.09154203371381116,
+      "forest_cover_accuracy": 0.08463951317466364,
+      "conifer_recall": 0.04226428458262271,
+      "deciduous_recall": 0.21001566526858356,
+      "mixed_recall": 0.021642196846112016,
+      "top_cover_confusions": [
+        {
+          "true": "conifer",
+          "predicted": "wetland_shrub",
+          "count": 77462
+        },
+        {
+          "true": "deciduous",
+          "predicted": "wetland_shrub",
+          "count": 41282
+        },
+        {
+          "true": "mixed",
+          "predicted": "wetland_shrub",
+          "count": 33249
+        },
+        {
+          "true": "conifer",
+          "predicted": "deciduous",
+          "count": 21209
+        },
+        {
+          "true": "mixed",
+          "predicted": "deciduous",
+          "count": 8945
+        },
+        {
+          "true": "agriculture",
+          "predicted": "deciduous",
+          "count": 4919
+        },
+        {
+          "true": "developed",
+          "predicted": "deciduous",
+          "count": 3931
+        },
+        {
+          "true": "developed",
+          "predicted": "mixed",
+          "count": 3401
+        }
+      ],
+      "notes": "LightGBM n_estimators=100 max_depth=3 class_weight=None",
+      "wall_seconds": 15.528407375000825
+    },
+    {
+      "name": "lightgbm_balanced",
+      "train_rows": 1065288,
+      "test_rows": 266322,
+      "cover_accuracy": 0.4067106735455576,
+      "canopy_accuracy": 0.688437305216993,
+      "overall_accuracy_mean": 0.5475739893812753,
+      "cover_macro_f1": 0.40629691526368156,
+      "cover_weighted_f1": 0.4375519542452581,
+      "forest_cover_accuracy": 0.3741247066679834,
+      "conifer_recall": 0.38673451319186214,
+      "deciduous_recall": 0.3983526201425034,
+      "mixed_recall": 0.3134094616639478,
+      "top_cover_confusions": [
+        {
+          "true": "conifer",
+          "predicted": "deciduous",
+          "count": 31964
+        },
+        {
+          "true": "conifer",
+          "predicted": "mixed",
+          "count": 24129
+        },
+        {
+          "true": "mixed",
+          "predicted": "deciduous",
+          "count": 14262
+        },
+        {
+          "true": "deciduous",
+          "predicted": "mixed",
+          "count": 13781
+        },
+        {
+          "true": "deciduous",
+          "predicted": "conifer",
+          "count": 10461
+        },
+        {
+          "true": "mixed",
+          "predicted": "conifer",
+          "count": 9798
+        },
+        {
+          "true": "deciduous",
+          "predicted": "wetland_unknown",
+          "count": 5210
+        },
+        {
+          "true": "conifer",
+          "predicted": "wetland_unknown",
+          "count": 3970
+        }
+      ],
+      "notes": "LightGBM n_estimators=100 max_depth=3 class_weight=balanced",
+      "wall_seconds": 21.69679470799747
+    },
+    {
+      "name": "xgboost_unweighted",
+      "train_rows": 1065288,
+      "test_rows": 266322,
+      "cover_accuracy": 0.5359977771269365,
+      "canopy_accuracy": 0.6911032509518553,
+      "overall_accuracy_mean": 0.613550514039396,
+      "cover_macro_f1": 0.42293482660909654,
+      "cover_weighted_f1": 0.4480179598204253,
+      "forest_cover_accuracy": 0.5113688200411017,
+      "conifer_recall": 0.9081182840793656,
+      "deciduous_recall": 0.19027405797833813,
+      "mixed_recall": 2.1750951604132682e-05,
+      "top_cover_confusions": [
+        {
+          "true": "deciduous",
+          "predicted": "conifer",
+          "count": 47674
+        },
+        {
+          "true": "mixed",
+          "predicted": "conifer",
+          "count": 38534
+        },
+        {
+          "true": "conifer",
+          "predicted": "deciduous",
+          "count": 9633
+        },
+        {
+          "true": "mixed",
+          "predicted": "deciduous",
+          "count": 7246
+        },
+        {
+          "true": "agriculture",
+          "predicted": "developed",
+          "count": 3276
+        },
+        {
+          "true": "wetland_marsh",
+          "predicted": "wetland_shrub",
+          "count": 2858
+        },
+        {
+          "true": "water",
+          "predicted": "deciduous",
+          "count": 2040
+        },
+        {
+          "true": "developed",
+          "predicted": "agriculture",
+          "count": 1537
+        }
+      ],
+      "notes": "XGBoost hist n_estimators=100 max_depth=3 balanced=False",
+      "wall_seconds": 28.854094541995437
+    },
+    {
+      "name": "xgboost_balanced",
+      "train_rows": 1065288,
+      "test_rows": 266322,
+      "cover_accuracy": 0.39943001329218014,
+      "canopy_accuracy": 0.6880505553427806,
+      "overall_accuracy_mean": 0.5437402843174803,
+      "cover_macro_f1": 0.40704073203359764,
+      "cover_weighted_f1": 0.42985260913932927,
+      "forest_cover_accuracy": 0.36422078319060586,
+      "conifer_recall": 0.3658213809750142,
+      "deciduous_recall": 0.3876564421311503,
+      "mixed_recall": 0.33022294725394236,
+      "top_cover_confusions": [
+        {
+          "true": "conifer",
+          "predicted": "deciduous",
+          "count": 32253
+        },
+        {
+          "true": "conifer",
+          "predicted": "mixed",
+          "count": 25656
+        },
+        {
+          "true": "deciduous",
+          "predicted": "mixed",
+          "count": 14509
+        },
+        {
+          "true": "mixed",
+          "predicted": "deciduous",
+          "count": 13919
+        },
+        {
+          "true": "deciduous",
+          "predicted": "conifer",
+          "count": 10161
+        },
+        {
+          "true": "mixed",
+          "predicted": "conifer",
+          "count": 9273
+        },
+        {
+          "true": "deciduous",
+          "predicted": "wetland_unknown",
+          "count": 5551
+        },
+        {
+          "true": "conifer",
+          "predicted": "wetland_unknown",
+          "count": 4621
+        }
+      ],
+      "notes": "XGBoost hist n_estimators=100 max_depth=3 balanced=True",
+      "wall_seconds": 29.40235537499393
+    },
+    {
+      "name": "hierarchical_lgbm_unweighted",
+      "train_rows": 1065288,
+      "test_rows": 266322,
+      "cover_accuracy": 0.5401844383866147,
+      "canopy_accuracy": 0.6919518477632339,
+      "overall_accuracy_mean": 0.6160681430749243,
+      "cover_macro_f1": 0.42881382736653506,
+      "cover_weighted_f1": 0.44763348568883243,
+      "forest_cover_accuracy": 0.516753431808242,
+      "conifer_recall": 0.9259000382102683,
+      "deciduous_recall": 0.1774386443647144,
+      "mixed_recall": 0.0,
+      "top_cover_confusions": [
+        {
+          "true": "deciduous",
+          "predicted": "conifer",
+          "count": 48602
+        },
+        {
+          "true": "mixed",
+          "predicted": "conifer",
+          "count": 39596
+        },
+        {
+          "true": "conifer",
+          "predicted": "deciduous",
+          "count": 7821
+        },
+        {
+          "true": "mixed",
+          "predicted": "deciduous",
+          "count": 6286
+        },
+        {
+          "true": "agriculture",
+          "predicted": "developed",
+          "count": 3422
+        },
+        {
+          "true": "wetland_marsh",
+          "predicted": "wetland_shrub",
+          "count": 2886
+        },
+        {
+          "true": "water",
+          "predicted": "deciduous",
+          "count": 1834
+        },
+        {
+          "true": "developed",
+          "predicted": "agriculture",
+          "count": 1353
+        }
+      ],
+      "notes": "Hierarchical LightGBM coarse\u2192fine; coarse_acc_on_test=0.9738; cover_acc_on_true_forest_rows=0.516753431808242; groups=[np.str_('anthropogenic'), np.str_('forest'), np.str_('other'), np.str_('water'), np.str_('wetland')]",
+      "wall_seconds": 11.744498291001946
+    }
+  ]
+}
