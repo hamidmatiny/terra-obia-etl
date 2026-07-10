@@ -24,7 +24,6 @@ from sklearn.ensemble import GradientBoostingClassifier
 from sklearn.metrics import accuracy_score, f1_score
 from sklearn.model_selection import train_test_split
 from sklearn.utils.class_weight import compute_sample_weight
-
 from terra_core.classification.evaluation import compute_object_classification_metrics
 from terra_core.classification.features import labeled_frame_to_features
 from terra_core.classification.registry import load_model_artifact
@@ -78,6 +77,8 @@ TEST_SIZE = 0.2
 
 @dataclass
 class ExperimentResult:
+    """Holdout metrics for one algorithm / artifact experiment."""
+
     name: str
     train_rows: int
     test_rows: int
@@ -95,15 +96,16 @@ class ExperimentResult:
     wall_seconds: float
 
 
-def _top_confusions(y_true: np.ndarray, y_pred: np.ndarray, top_n: int = 8) -> list[dict[str, object]]:
+def _top_confusions(
+    y_true: np.ndarray, y_pred: np.ndarray, top_n: int = 8
+) -> list[dict[str, object]]:
     pairs = Counter((t, p) for t, p in zip(y_true, y_pred, strict=True) if t != p)
-    return [
-        {"true": t, "predicted": p, "count": int(n)}
-        for (t, p), n in pairs.most_common(top_n)
-    ]
+    return [{"true": t, "predicted": p, "count": int(n)} for (t, p), n in pairs.most_common(top_n)]
 
 
-def _forest_metrics(y_true: np.ndarray, y_pred: np.ndarray) -> tuple[float | None, float | None, float | None, float | None]:
+def _forest_metrics(
+    y_true: np.ndarray, y_pred: np.ndarray
+) -> tuple[float | None, float | None, float | None, float | None]:
     forest = {"conifer", "deciduous", "mixed"}
     mask = np.isin(y_true, list(forest))
     if not mask.any():
@@ -130,6 +132,7 @@ def evaluate_predictions(
     notes: str,
     wall_seconds: float,
 ) -> ExperimentResult:
+    """Score cover/canopy predictions with the production metric helpers."""
     cover_acc = float(accuracy_score(y_cover_true, y_cover_pred))
     canopy_acc = float(accuracy_score(y_canopy_true, y_canopy_pred))
     report = compute_object_classification_metrics(
@@ -143,7 +146,9 @@ def evaluate_predictions(
         cover_accuracy=cover_acc,
         canopy_accuracy=canopy_acc,
         overall_accuracy_mean=float(report.overall_accuracy),
-        cover_macro_f1=float(f1_score(y_cover_true, y_cover_pred, average="macro", zero_division=0)),
+        cover_macro_f1=float(
+            f1_score(y_cover_true, y_cover_pred, average="macro", zero_division=0)
+        ),
         cover_weighted_f1=float(
             f1_score(y_cover_true, y_cover_pred, average="weighted", zero_division=0)
         ),
@@ -181,6 +186,7 @@ def eval_existing_artifact(
     train_rows: int,
     notes: str,
 ) -> ExperimentResult:
+    """Evaluate a committed joblib artifact on a fixed holdout."""
     t0 = time.perf_counter()
     art = load_model_artifact(model_dir)
     cover_pred = art.cover_type_model.predict(x_test)
@@ -209,6 +215,7 @@ def train_sklearn_gbm(
     class_weight: str | None,
     n_estimators: int = 100,
 ) -> ExperimentResult:
+    """Train sklearn GBM cover/canopy heads on the train partition only."""
     t0 = time.perf_counter()
     cover_m = GradientBoostingClassifier(
         n_estimators=n_estimators, max_depth=3, random_state=RANDOM_STATE, verbose=0
@@ -243,6 +250,7 @@ def train_lightgbm(
     *,
     class_weight: str | None,
 ) -> ExperimentResult:
+    """Train LightGBM cover/canopy heads on the train partition only."""
     import lightgbm as lgb
 
     t0 = time.perf_counter()
@@ -281,6 +289,7 @@ def train_xgboost(
     *,
     balanced: bool,
 ) -> ExperimentResult:
+    """Train XGBoost cover/canopy heads on the train partition only."""
     from xgboost import XGBClassifier
 
     t0 = time.perf_counter()
@@ -421,6 +430,7 @@ def train_hierarchical_lgbm(
 
 
 def main() -> None:
+    """Run locked-holdout algorithm and hierarchy experiments; write reports."""
     etl = Path(__file__).resolve().parents[1]
     data_path = etl / "data/processed/labeled_stands.csv"
     stratified_path = etl / "data/processed/labeled_stands_stratified_300k.csv"
@@ -470,7 +480,10 @@ def main() -> None:
             y_cover_test,
             y_canopy_test,
             train_rows=len(x_train),
-            notes="Committed artifact; trained on full CSV with same split seed (class_weight=balanced)",
+            notes=(
+                "Committed artifact; trained on full CSV with same split seed "
+                "(class_weight=balanced)"
+            ),
         )
     )
     print(f"  existing balanced OA={results[-1].overall_accuracy_mean:.4f}", flush=True)
@@ -646,19 +659,29 @@ def main() -> None:
         "",
         "## Results",
         "",
-        "| Experiment | Cover acc | Canopy acc | Overall (mean) | Cover macro F1 | Cover weighted F1 | Forest-only cover acc | Conifer recall | Deciduous recall | Mixed recall | Wall (s) |",
+        (
+            "| Experiment | Cover acc | Canopy acc | Overall (mean) | Cover macro F1 | "
+            "Cover weighted F1 | Forest-only cover acc | Conifer recall | "
+            "Deciduous recall | Mixed recall | Wall (s) |"
+        ),
         "|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|",
     ]
+    row_fmt = (
+        "| {name} | {c:.1%} | {k:.1%} | {o:.1%} | {mf:.1%} | {wf:.1%} | "
+        "{fa} | {cr} | {dr} | {mr} | {w:.0f} |"
+    )
     for r in results:
         lines.append(
-            "| {name} | {c:.1%} | {k:.1%} | {o:.1%} | {mf:.1%} | {wf:.1%} | {fa} | {cr} | {dr} | {mr} | {w:.0f} |".format(
+            row_fmt.format(
                 name=r.name,
                 c=r.cover_accuracy,
                 k=r.canopy_accuracy,
                 o=r.overall_accuracy_mean,
                 mf=r.cover_macro_f1,
                 wf=r.cover_weighted_f1,
-                fa=f"{r.forest_cover_accuracy:.1%}" if r.forest_cover_accuracy is not None else "—",
+                fa=(
+                    f"{r.forest_cover_accuracy:.1%}" if r.forest_cover_accuracy is not None else "—"
+                ),
                 cr=f"{r.conifer_recall:.1%}" if r.conifer_recall is not None else "—",
                 dr=f"{r.deciduous_recall:.1%}" if r.deciduous_recall is not None else "—",
                 mr=f"{r.mixed_recall:.1%}" if r.mixed_recall is not None else "—",
